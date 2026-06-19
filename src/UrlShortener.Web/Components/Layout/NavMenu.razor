@@ -34,6 +34,16 @@
 
         <AuthorizeView>
             <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="links/create">
+                        <span class="bi bi-link-45deg-nav-menu" aria-hidden="true"></span> Create link
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="links/my">
+                        <span class="bi bi-card-list-nav-menu" aria-hidden="true"></span> My links
+                    </NavLink>
+                </div>
                 @if (context.User.IsInRole(ApplicationRoleNames.Admin))
                 {
                     <div class="nav-item px-3">

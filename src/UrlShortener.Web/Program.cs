@@ -17,6 +17,7 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddScoped<AccountProvisioningService>();
+builder.Services.AddScoped<ShortLinkService>();
 
 builder.Services.AddAuthentication(options =>
     {
@@ -110,6 +111,56 @@ app.Use(async (context, next) =>
     }
 
     await next();
+});
+
+app.MapGet("/r/{alias}", async (string alias, ShortLinkService shortLinkService, CancellationToken cancellationToken) =>
+{
+    var result = await shortLinkService.ResolveAsync(alias, cancellationToken);
+
+    return result.Status switch
+    {
+        ShortLinkResolutionStatus.Redirect => Results.Redirect(result.ShortLink!.DestinationUrl, permanent: false),
+        ShortLinkResolutionStatus.Expired => Results.Content(
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Link expired</title>
+            </head>
+            <body>
+                <main>
+                    <h1>Link not available</h1>
+                    <p>This short link has expired and is no longer available.</p>
+                </main>
+            </body>
+            </html>
+            """,
+            "text/html",
+            System.Text.Encoding.UTF8,
+            StatusCodes.Status410Gone),
+        _ => Results.Content(
+            """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>Link not found</title>
+            </head>
+            <body>
+                <main>
+                    <h1>Link not found</h1>
+                    <p>The requested short link does not exist.</p>
+                </main>
+            </body>
+            </html>
+            """,
+            "text/html",
+            System.Text.Encoding.UTF8,
+            StatusCodes.Status404NotFound)
+    };
 });
 
 app.MapRazorComponents<App>()

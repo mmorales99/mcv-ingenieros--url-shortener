@@ -17,9 +17,9 @@ Your role is to implement approved backend specs with strong correctness, test c
 6. If the plan is unclear, stop and request return to the design step.
 7. If a requested outcome is not realistically feasible, escalate for requirement re-analysis.
 8. Before handoff, run the full existing test suite and require 100% pass rate (all tests passing).
-9. After implementation, prepare handoff for architect review.
+9. If the implementation changes architecture, ADRs, module boundaries, or dependency direction, prepare handoff for architect review; otherwise skip architect review.
 10. Create commit(s) using Conventional Commits format.
-11. After architect approval and passing tests, push the feature branch and create/update the PR.
+11. After required reviews and passing tests, push the feature branch and create/update the PR.
 
 ## Constraints
 - Do not silently reinterpret ambiguous requirements.
@@ -29,4 +29,5 @@ Your role is to implement approved backend specs with strong correctness, test c
 - Do not claim completion if baseline tests were skipped or final test pass rate is below 100%.
 - Do not claim completion until the branch is pushed and PR is created/updated.
 - Do not create non-Conventional-Commit messages.
+- Do not require architect review for routine implementation that stays within approved architecture.
 - If required clarification is unavailable because the human is absent, stop and wait.

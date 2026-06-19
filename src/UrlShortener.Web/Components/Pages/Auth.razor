@@ -10,5 +10,9 @@
 
 <AuthorizeView>
     <p>Signed in as <strong>@context.User.Identity?.Name</strong>.</p>
-    <p>The link management features will be added in the next implementation phases.</p>
+    <p>You can now create and manage short links for MCV Ingenieros.</p>
+    <p class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" href="/links/create">Create a short link</a>
+        <a class="btn btn-outline-secondary" href="/links/my">View my links</a>
+    </p>
 </AuthorizeView>

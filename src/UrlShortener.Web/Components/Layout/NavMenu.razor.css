@@ -55,6 +55,14 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-list-nested' viewBox='0 0 16 16'%3E%3Cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z'/%3E%3C/svg%3E");
 }
 
+.bi-link-45deg-nav-menu {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-link-45deg' viewBox='0 0 16 16'%3E%3Cpath d='M4.715 6.542a3 3 0 0 1 0-4.243l1.414-1.414a3 3 0 1 1 4.243 4.243l-.707.707-.708-.707.708-.707a2 2 0 1 0-2.829-2.829L5.422 3.006a2 2 0 0 0 0 2.829l.293.293-.707.707-.293-.293Zm6.57 2.916a3 3 0 0 1 0 4.243l-1.414 1.414a3 3 0 1 1-4.243-4.243l.707-.707.708.707-.708.707a2 2 0 1 0 2.829 2.829l1.414-1.414a2 2 0 0 0 0-2.829l-.293-.293.707-.707.293.293Z'/%3E%3Cpath d='M6.586 9.414a.5.5 0 0 1 0-.708l2.12-2.12a.5.5 0 1 1 .708.708l-2.12 2.12a.5.5 0 0 1-.708 0Z'/%3E%3C/svg%3E");
+}
+
+.bi-card-list-nav-menu {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-card-list' viewBox='0 0 16 16'%3E%3Cpath d='M14.5 3h-13A1.5 1.5 0 0 0 0 4.5v7A1.5 1.5 0 0 0 1.5 13h13a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 14.5 3ZM1 4.5a.5.5 0 0 1 .5-.5H4v8H1.5a.5.5 0 0 1-.5-.5v-7ZM5 12V4h9.5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5H5Z'/%3E%3Cpath d='M6.5 5.5a.5.5 0 0 1 .5-.5H13a.5.5 0 0 1 0 1H7a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5H13a.5.5 0 0 1 0 1H7a.5.5 0 0 1-.5-.5Zm0 2a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H7a.5.5 0 0 1-.5-.5Z'/%3E%3C/svg%3E");
+}
+
 .bi-person-nav-menu {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-person' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z'/%3E%3C/svg%3E");
 }

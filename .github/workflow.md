@@ -21,3 +21,5 @@ start with functionality
 after spec is reached, ask the architect to review the code (the architect must give an ok if the code compiles, works as intended and doesnt has badsmells -- if solid, kiss and desging principles are not followed, is NOT OK; but if is needed not to follow them caused to languaje, is ok but try to minimize it - user will get angy and we dont want the human to be angry)
 if the review is negative, fix the code and ask again -- do this until architect gives an ok
 then, update the docs of the feature if its critical (like security or very high demanding) or configuration related
+durable project memories/rules must be written in `.github/memories.md` so the repository stays self-describing when possible
+implementations should be idempotent whenever it is feasible and reasonable for the feature

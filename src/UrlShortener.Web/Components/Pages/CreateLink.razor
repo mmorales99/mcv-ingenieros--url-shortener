@@ -1,0 +1,121 @@
+@page "/links/create"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using UrlShortener.Web.Data
+@using UrlShortener.Web.Services
+
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ShortLinkService ShortLinkService
+@inject UserManager<ApplicationUser> UserManager
+
+<PageTitle>Create short link</PageTitle>
+
+<h1>Create short link</h1>
+
+<p>Create a short URL with a custom alias and an optional expiration date.</p>
+<p class="text-secondary">Aliases are case-insensitive and may contain only letters, numbers, and hyphens. Destination URLs must use http or https.</p>
+
+@if (!string.IsNullOrWhiteSpace(successUrl))
+{
+    <div class="alert alert-success" role="alert">
+        Short link created:
+        <a href="@successUrl">@successUrl</a>
+    </div>
+}
+
+@if (errors.Count > 0)
+{
+    <div class="alert alert-danger" role="alert">
+        <ul class="mb-0">
+            @foreach (var error in errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+
+<EditForm Model="Input" method="post" OnValidSubmit="CreateAsync" FormName="create-link">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" role="alert" />
+
+    <div class="form-floating mb-3">
+        <InputText @bind-Value="Input.DestinationUrl" id="DestinationUrl" class="form-control" autocomplete="url" aria-required="true" placeholder="https://example.com/resource" />
+        <label for="DestinationUrl">Destination URL</label>
+        <ValidationMessage For="() => Input.DestinationUrl" class="text-danger" />
+    </div>
+
+    <div class="form-floating mb-3">
+        <InputText @bind-Value="Input.Alias" id="Alias" class="form-control" aria-describedby="alias-help" aria-required="true" placeholder="project-manual" />
+        <label for="Alias">Alias</label>
+        <ValidationMessage For="() => Input.Alias" class="text-danger" />
+    </div>
+
+    <p id="alias-help" class="text-secondary">Allowed characters: letters, numbers, and hyphens.</p>
+
+    <div class="mb-3">
+        <label for="ExpiresOnUtc" class="form-label">Expiration date (optional)</label>
+        <InputDate @bind-Value="Input.ExpiresOnUtc" id="ExpiresOnUtc" class="form-control" />
+        <ValidationMessage For="() => Input.ExpiresOnUtc" class="text-danger" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create short link</button>
+</EditForm>
+
+@code {
+    private readonly List<string> errors = [];
+    private string? successUrl;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    private async Task CreateAsync()
+    {
+        errors.Clear();
+        successUrl = null;
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+        if (user is null)
+        {
+            errors.Add("Unable to resolve the authenticated user.");
+            return;
+        }
+
+        var result = await ShortLinkService.CreateAsync(user.Id, new ShortLinkCreationInput
+        {
+            DestinationUrl = Input.DestinationUrl,
+            Alias = Input.Alias,
+            ExpiresOnUtc = Input.ExpiresOnUtc
+        });
+
+        if (!result.Succeeded)
+        {
+            errors.AddRange(result.Errors);
+            return;
+        }
+
+        successUrl = new Uri(new Uri(NavigationManager.BaseUri), $"r/{result.ShortLink!.Alias}").AbsoluteUri;
+        Input = new InputModel();
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [Url]
+        [Display(Name = "Destination URL")]
+        public string DestinationUrl { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, ErrorMessage = "Alias must be 100 characters or fewer.")]
+        [RegularExpression("^[A-Za-z0-9-]+$", ErrorMessage = "Alias may contain only letters, numbers, and hyphens.")]
+        public string Alias { get; set; } = string.Empty;
+
+        [Display(Name = "Expiration date")]
+        public DateTime? ExpiresOnUtc { get; set; }
+    }
+}

@@ -6,4 +6,6 @@ namespace UrlShortener.Web.Data;
 public class ApplicationUser : IdentityUser
 {
     public bool ForcePasswordChange { get; set; }
+
+    public ICollection<ShortLink> ShortLinks { get; set; } = [];
 }
