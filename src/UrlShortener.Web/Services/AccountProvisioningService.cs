@@ -70,7 +70,8 @@ public sealed class AccountProvisioningService(
             UserName = normalizedEmail,
             Email = normalizedEmail,
             EmailConfirmed = true,
-            ForcePasswordChange = forcePasswordChange
+            ForcePasswordChange = forcePasswordChange,
+            LockoutEnabled = true
         };
 
         var createResult = await userManager.CreateAsync(user, password);

@@ -54,4 +54,30 @@ public sealed class AuthFoundationRoutesTests
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
         Assert.StartsWith("http://localhost/Account/Login", response.Headers.Location?.OriginalString);
     }
+
+    [Fact]
+    public async Task CreateLinkPage_WhenAnonymous_RedirectsToLogin()
+    {
+        using var factory = new UrlShortenerWebApplicationFactory();
+        await factory.SeedAdminAsync();
+        using var client = factory.CreateClient(new() { AllowAutoRedirect = false });
+
+        var response = await client.GetAsync("/links/create");
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.StartsWith("http://localhost/Account/Login", response.Headers.Location?.OriginalString);
+    }
+
+    [Fact]
+    public async Task MyLinksPage_WhenAnonymous_RedirectsToLogin()
+    {
+        using var factory = new UrlShortenerWebApplicationFactory();
+        await factory.SeedAdminAsync();
+        using var client = factory.CreateClient(new() { AllowAutoRedirect = false });
+
+        var response = await client.GetAsync("/links/my");
+
+        Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
+        Assert.StartsWith("http://localhost/Account/Login", response.Headers.Location?.OriginalString);
+    }
 }

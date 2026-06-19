@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -41,6 +42,22 @@ public sealed class UrlShortenerWebApplicationFactory : WebApplicationFactory<Pr
         {
             throw new InvalidOperationException(string.Join(" ", result.Errors.Select(error => error.Description)));
         }
+    }
+
+    public async Task<ApplicationUser> SeedEmployeeAsync(string email = "employee@mcv.local", string password = "Employee123!")
+    {
+        using var scope = Services.CreateScope();
+        var provisioningService = scope.ServiceProvider.GetRequiredService<AccountProvisioningService>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        var result = await provisioningService.CreateEmployeeAsync(email, password);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(string.Join(" ", result.Errors.Select(error => error.Description)));
+        }
+
+        return await userManager.FindByEmailAsync(email)
+            ?? throw new InvalidOperationException("The seeded employee could not be loaded.");
     }
 
     public new void Dispose()
