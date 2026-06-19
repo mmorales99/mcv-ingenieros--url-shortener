@@ -1,0 +1,93 @@
+@page "/admin/users/create"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@using UrlShortener.Web.Data
+@using UrlShortener.Web.Services
+
+@attribute [Authorize(Roles = ApplicationRoleNames.Admin)]
+@inject AccountProvisioningService ProvisioningService
+
+<PageTitle>Create employee account</PageTitle>
+
+<h1>Create employee account</h1>
+
+<p>Create a pre-provisioned employee account for application access.</p>
+<div class="alert alert-info" role="alert">
+    New employee accounts are created with a temporary password. Share it through a secure channel. The employee will be required to change it on first login.
+</div>
+
+@if (!string.IsNullOrWhiteSpace(statusMessage))
+{
+    <div class="alert alert-success" role="alert">@statusMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+<EditForm Model="Input" method="post" OnValidSubmit="CreateEmployeeAsync" FormName="create-employee">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" role="alert" />
+
+    <div class="form-floating mb-3">
+        <InputText @bind-Value="Input.Email" id="CreateEmployeeEmail" class="form-control" autocomplete="username" aria-required="true" placeholder="employee@mcv.example" />
+        <label for="CreateEmployeeEmail">Employee email</label>
+        <ValidationMessage For="() => Input.Email" class="text-danger" />
+    </div>
+
+    <div class="form-floating mb-3">
+        <InputText type="password" @bind-Value="Input.Password" id="CreateEmployeePassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+        <label for="CreateEmployeePassword">Temporary password</label>
+        <ValidationMessage For="() => Input.Password" class="text-danger" />
+    </div>
+
+    <div class="form-floating mb-3">
+        <InputText type="password" @bind-Value="Input.ConfirmPassword" id="CreateEmployeeConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm password" />
+        <label for="CreateEmployeeConfirmPassword">Confirm password</label>
+        <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create employee</button>
+</EditForm>
+
+@code {
+    private string? errorMessage;
+    private string? statusMessage;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    private async Task CreateEmployeeAsync()
+    {
+        errorMessage = null;
+        statusMessage = null;
+
+        var result = await ProvisioningService.CreateEmployeeAsync(Input.Email, Input.Password);
+        if (!result.Succeeded)
+        {
+            errorMessage = string.Join(" ", result.Errors.Select(error => error.Description));
+            return;
+        }
+
+        statusMessage = $"Employee account {Input.Email.Trim()} created. Share the temporary password securely; the employee must change it on first login.";
+        Input = new InputModel();
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", ErrorMessage = "The password must contain uppercase, lowercase, and numeric characters.")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

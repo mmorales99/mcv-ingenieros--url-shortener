@@ -1,0 +1,22 @@
+﻿@using UrlShortener.Web.Components.Account.Shared
+<Router AppAssembly="typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <AuthorizeView Context="authState">
+                    <Authorized>
+                        <LayoutView Layout="typeof(Layout.MainLayout)">
+                            <PageTitle>Access denied</PageTitle>
+                            <h1>Access denied</h1>
+                            <p>You do not have permission to access this page.</p>
+                        </LayoutView>
+                    </Authorized>
+                    <NotAuthorized>
+                        <RedirectToLogin />
+                    </NotAuthorized>
+                </AuthorizeView>
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

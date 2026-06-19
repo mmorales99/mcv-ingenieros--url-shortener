@@ -1,0 +1,108 @@
+@page "/setup/admin"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using UrlShortener.Web.Data
+@using UrlShortener.Web.Services
+
+@inject AccountProvisioningService ProvisioningService
+@inject SignInManager<ApplicationUser> SignInManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>Initial admin setup</PageTitle>
+
+<h1>Initial admin setup</h1>
+
+@if (setupComplete)
+{
+    <div class="alert alert-success" role="alert">
+        The administrator account was created successfully. Redirecting to employee provisioning...
+    </div>
+}
+else
+{
+    <p>Create the first administrator account for the application. This page is only available until the first admin exists.</p>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">@errorMessage</div>
+    }
+
+    <EditForm Model="Input" method="post" OnValidSubmit="CreateAdminAsync" FormName="setup-admin">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" role="alert" />
+
+        <div class="form-floating mb-3">
+            <InputText @bind-Value="Input.Email" id="SetupAdminEmail" class="form-control" autocomplete="username" aria-required="true" placeholder="admin@mcv.example" />
+            <label for="SetupAdminEmail">Admin email</label>
+            <ValidationMessage For="() => Input.Email" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText type="password" @bind-Value="Input.Password" id="SetupAdminPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Password" />
+            <label for="SetupAdminPassword">Password</label>
+            <ValidationMessage For="() => Input.Password" class="text-danger" />
+        </div>
+
+        <div class="form-floating mb-3">
+            <InputText type="password" @bind-Value="Input.ConfirmPassword" id="SetupAdminConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm password" />
+            <label for="SetupAdminConfirmPassword">Confirm password</label>
+            <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create administrator</button>
+    </EditForm>
+}
+
+@code {
+    private string? errorMessage;
+    private bool setupComplete;
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (await ProvisioningService.HasAnyAdminAsync())
+        {
+            NavigationManager.NavigateTo("/Account/Login");
+        }
+    }
+
+    private async Task CreateAdminAsync()
+    {
+        var result = await ProvisioningService.CreateFirstAdminAsync(Input.Email, Input.Password);
+        if (!result.Succeeded)
+        {
+            errorMessage = string.Join(" ", result.Errors.Select(error => error.Description));
+            return;
+        }
+
+        var user = await SignInManager.UserManager.FindByEmailAsync(Input.Email);
+        if (user is null)
+        {
+            errorMessage = "The administrator account was created, but sign-in could not be completed automatically.";
+            return;
+        }
+
+        await SignInManager.SignInAsync(user, isPersistent: false);
+        setupComplete = true;
+        NavigationManager.NavigateTo("/admin/users/create");
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", ErrorMessage = "The password must contain uppercase, lowercase, and numeric characters.")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [Compare(nameof(Password), ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

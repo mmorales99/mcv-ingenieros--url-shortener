@@ -1,0 +1,41 @@
+﻿@page "/"
+
+@inject UrlShortener.Web.Services.AccountProvisioningService ProvisioningService
+
+<PageTitle>MCV Shortener</PageTitle>
+
+<h1>MCV Shortener</h1>
+
+<p>Internal URL shortening for MCV Ingenieros with public redirects and employee-managed links.</p>
+
+@if (isCheckingSetup)
+{
+    <p>Checking application setup...</p>
+}
+else if (!hasAnyAdmin)
+{
+    <div class="alert alert-warning" role="alert">
+        Initial setup is required before employees can sign in.
+    </div>
+    <p>
+        <a class="btn btn-primary" href="/setup/admin">Create the first administrator</a>
+    </p>
+}
+else
+{
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-primary" href="/Account/Login">Employee login</a>
+        <a class="btn btn-outline-secondary" href="/dashboard">Open dashboard</a>
+    </div>
+}
+
+@code {
+    private bool hasAnyAdmin;
+    private bool isCheckingSetup = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hasAnyAdmin = await ProvisioningService.HasAnyAdminAsync();
+        isCheckingSetup = false;
+    }
+}
