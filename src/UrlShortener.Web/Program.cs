@@ -78,6 +78,8 @@ app.UseHttpsRedirection();
 
 
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 
@@ -94,10 +96,9 @@ app.Use(async (context, next) =>
             "/_framework"
         };
 
-        if (!excludedPaths.Any(path.StartsWith))
+        if (!excludedPaths.Any(excludedPath => path.StartsWith(excludedPath, StringComparison.OrdinalIgnoreCase)))
         {
-            await using var scope = app.Services.CreateAsyncScope();
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var userManager = context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
             var user = await userManager.GetUserAsync(context.User);
 
             if (user?.ForcePasswordChange == true)
