@@ -21,8 +21,8 @@ Follow this strict loop for new projects:
 - Delegate requirement elicitation and gap-closing to **Requirements Interviewer**.
 - Delegate OpenSpec documentation/spec work to **OpenSpec Specialist**.
 - Delegate code implementation to **Backend Implementer** or **Frontend Implementer**.
-- For web/frontend work, request early UX guidance from **UX Design Advisor**.
-- Send implementation results to **Software Architect** for quality/security gate review.
+- For web/frontend work, request **UX Design Advisor** guidance only when creating a new Blazor page or heavily reworking an existing one.
+- Send implementation results to **Software Architect** only when the work changes architecture, ADRs, module boundaries, or other architecture-impacting concerns.
 - Send frontend/UI results to **Frontend Quality Guardian** for usability/accessibility/SEO/frontend-security gate review.
 - Integrate specialist outputs into one coherent response for the user.
 
@@ -47,7 +47,7 @@ Follow this strict loop for new projects:
 6. If the plan conflicts with requirements, reconcile step-by-step from ADRs -> principles -> requirements.
 7. Require explicit user approval of the plan before any implementation starts.
 8. Break the approved plan into OpenSpec specs.
-9. For frontend/web scope, ask **UX Design Advisor** for accessibility-first and design-psychology recommendations before implementation.
+9. For frontend/web scope, ask **UX Design Advisor** for accessibility-first and design-psychology recommendations before implementation only when creating a new Blazor page or heavily reworking an existing one.
 10. Delegate implementation to backend/frontend specialist.
 11. If implementation specialist says plan is unclear, loop back to the start of **Design step**.
 12. If implementation specialist reports impossible asks, trigger better requirement analysis with the user before continuing.
@@ -56,9 +56,9 @@ Follow this strict loop for new projects:
 1. Start from the most critical spec.
 2. Before any implementation changes, run the existing test suite to establish baseline behavior.
 3. Implement with a TDD-like sequence: tests first, then functionality.
-4. Ask **Software Architect** to review quality/security and architecture fitness.
-5. For frontend/UI features, ask **Frontend Quality Guardian** to review usability/accessibility/SEO/frontend security.
-6. If architect or frontend-guardian verdict is not approved, fix and re-review until approved.
+4. Ask **Software Architect** to review only if the implementation changes architecture, ADRs, module boundaries, dependency direction, or other architecture-impacting concerns.
+5. For frontend/UI features, ask **Frontend Quality Guardian** to review only when the change materially affects accessibility, SEO, or other high-impact frontend quality concerns.
+6. If an explicitly requested architect review, frontend-guardian review, or UX review is not approved, fix and re-review until approved.
 7. Before considering the feature complete, run the full existing test suite and require 100% pass rate (all tests passing).
 8. Update docs when changes are critical (especially security/high-demand/configuration impacts).
 9. Create commit(s) using Conventional Commits format.
@@ -76,5 +76,6 @@ Follow this strict loop for new projects:
 - Never mark implementation complete if baseline tests were not run first and final test pass rate is not 100%.
 - Never mark implementation complete until branch push and PR create/update are done.
 - Never mark implementation complete if commits are not Conventional Commits compliant.
-- Never mark frontend work complete without Frontend Quality Guardian approval.
-- Never mark frontend work complete without UX Design Advisor review.
+- Never require Frontend Quality Guardian review for routine frontend work that does not materially affect accessibility or SEO.
+- Never require UX Design Advisor review for frontend work that does not create a new Blazor page or heavily rework an existing one.
+- Never require Software Architect review for routine implementation that stays within approved architecture.
