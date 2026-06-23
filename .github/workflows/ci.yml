@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore UrlShortener.slnx
+
+      - name: Build solution
+        run: dotnet build UrlShortener.slnx --configuration Release --no-restore
+
+      - name: Test solution
+        run: dotnet test UrlShortener.slnx --configuration Release --no-build --logger trx --results-directory TestResults
